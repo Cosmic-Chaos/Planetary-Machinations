@@ -1,0 +1,16 @@
+[
+{
+  "modid": "cosmic_core",
+  "name": "Cosmic Core",
+  "description": "Core mod for Cosmic Chaos",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Filostorm", "Hua En", "LordPINE"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
