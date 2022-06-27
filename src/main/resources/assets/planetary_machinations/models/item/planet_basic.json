@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "planetary_machinations:items/planet_basic"
+        "layer0": "planetary_machinations:items/planet_normal"
      },
      
     "display": {

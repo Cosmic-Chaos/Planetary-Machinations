@@ -31,24 +31,10 @@ public class ItemPlanetBasic extends Item {
     }
 
     String[] primaryMaterialTypes = { "titanium", "tungsten", "iridum", "platinum"};
-    String[] planetPrefixes = { "Bronson", "Ilius"};
-    String[] planetSuffixes = { "Alpha", "Beta"};
     String[] planetPremades = { "That one planet from a book", "Oh yeah"};
 
     private static Random rand = new Random();
-    @Override
-    @Nonnull
-    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        super.onUpdate(stack, world, entity, itemSlot, isSelected);
 
-        if (!(stack.hasTagCompound())) {
-            System.out.println("settingTagForPlanet...");
-            stack.setTagCompound(new NBTTagCompound());
-            stack.getTagCompound().setString("primaryMaterialType", primaryMaterialTypes[rand.nextInt(primaryMaterialTypes.length)]);
-            stack.getTagCompound().setString("name", planetPrefixes[rand.nextInt(planetPrefixes.length)] + " " + planetSuffixes[rand.nextInt(planetSuffixes.length)]);
-        }
-    }
-    /*
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems (CreativeTabs tab, NonNullList<ItemStack> items) {
@@ -62,7 +48,6 @@ public class ItemPlanetBasic extends Item {
             items.add(planetStack);
         }
     }
-    */
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {

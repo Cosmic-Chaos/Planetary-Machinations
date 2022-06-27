@@ -1,0 +1,11 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "planetary_machinations:items/planet_random"
+     },
+     "overrides": [
+        { "predicate": { "type": 0}, "model": "planetary_machinations:item/planet_unknown" },
+        { "predicate": { "type": 1}, "model": "planetary_machinations:item/planet_normal" },
+        { "predicate": { "type": 2}, "model": "planetary_machinations:item/planet_hot" }
+     ]
+}
