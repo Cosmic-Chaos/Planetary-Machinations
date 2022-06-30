@@ -12,6 +12,8 @@ import com.filostorm.planetarymachinations.items.planet.ItemPlanetRandom;
 
 import java.util.ArrayList;
 
+import static com.filostorm.planetarymachinations.items.planet.PlanetReference.*;
+
 
 @ZenRegister
 @ZenClass(PlanetAdditions.CLASS)
@@ -35,7 +37,7 @@ public class PlanetAdditions {
         @Override
         public void apply()
         {
-            ItemPlanetRandom.primaryMaterialTypes.add(name);
+            primaryMaterialTypes.add(name);
         }
 
         @Override

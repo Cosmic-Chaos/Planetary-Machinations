@@ -1,6 +1,7 @@
 package com.filostorm.planetarymachinations;
 
 import com.filostorm.planetarymachinations.init.PMItems;
+import com.filostorm.planetarymachinations.items.planet.PlanetReference;
 import com.filostorm.planetarymachinations.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -27,6 +28,7 @@ public class PlanetaryMachinations
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         System.out.println(Reference.MODID + ":preInit");
+        PlanetReference.init();
         PMItems.init();
     }
 
