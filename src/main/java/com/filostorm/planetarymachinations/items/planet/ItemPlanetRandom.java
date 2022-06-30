@@ -18,6 +18,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -25,12 +27,24 @@ import java.util.Random;
 public class ItemPlanetRandom extends Item {
 
 
-    String[] primaryMaterialTypes = {"titanium", "tungsten", "iridium", "platinum"};
-    String[] secondaryMaterialTypes = {"titanium", "tungsten", "iridium", "platinum"};
-    static String[] planetTypes = {"normal", "hot"};
-    String[] planetPrefixes = {"Bronson", "Ilius"};
-    String[] planetSuffixes = {"Alpha", "Beta"};
-    static int MAX_SCANNING = 2;
+    public static String[] defaultPrimaryMaterialTypes = {"titanium", "tungsten", "iridium", "platinum"};
+    public static ArrayList<String> primaryMaterialTypes = new ArrayList<>();
+    public static String[] secondaryMaterialTypes = {"titanium", "tungsten", "iridium", "platinum"};
+    public static String[] planetTypes = {"normal", "hot"};
+    public static String[] planetPrefixes = {"Bronson", "Ilius"};
+    public static String[] planetSuffixes = {"Alpha", "Beta"};
+    public static int MAX_SCANNING = 2;
+    public static int MAX_SIZE = 3;
+    static int baseAmountMin = 500000;
+    static int baseAmountMax = 1000000;
+    public static int primaryMaterialAmount(ItemStack stack) {
+        int size = stack.getTagCompound().getInteger("size");
+        return (int) ((Math.random() * (baseAmountMax - baseAmountMin)) + baseAmountMin)*(size);
+    }
+    public static int secondaryMaterialAmount(ItemStack stack) {
+        int size = stack.getTagCompound().getInteger("size");
+        return (int) (((Math.random() * (baseAmountMax - baseAmountMin)) + baseAmountMin)*0.66*(size));
+    }
 
     private static Random rand = new Random();
 
@@ -58,16 +72,21 @@ public class ItemPlanetRandom extends Item {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         final ItemStack stack = playerIn.getHeldItem(handIn);
-        if (!(stack.hasTagCompound())) {
+        if (!worldIn.isRemote) {
+            if (!(stack.hasTagCompound())) {
                 System.out.println("settingTagForPlanet...");
                 stack.setTagCompound(new NBTTagCompound());
-                stack.getTagCompound().setString("primaryMaterialType", primaryMaterialTypes[rand.nextInt(primaryMaterialTypes.length)]);
+                stack.getTagCompound().setString("primaryMaterialType", primaryMaterialTypes.get(rand.nextInt(primaryMaterialTypes.size())));
                 stack.getTagCompound().setString("secondaryMaterialType", secondaryMaterialTypes[rand.nextInt(secondaryMaterialTypes.length)]);
                 stack.getTagCompound().setString("name", planetPrefixes[rand.nextInt(planetPrefixes.length)] + " " + planetSuffixes[rand.nextInt(planetSuffixes.length)]);
                 stack.getTagCompound().setString("planetType", planetTypes[rand.nextInt(planetTypes.length)]);
+                stack.getTagCompound().setInteger("size", rand.nextInt(MAX_SIZE) + 1);
+                stack.getTagCompound().setInteger("primaryMaterialAmount", ItemPlanetRandom.primaryMaterialAmount(stack));
+                stack.getTagCompound().setInteger("secondaryMaterialAmount", ItemPlanetRandom.secondaryMaterialAmount(stack));
                 stack.getTagCompound().setInteger("scanningLevel", 1);
-        } else if ((stack.hasTagCompound()) && stack.getTagCompound().getInteger("scanningLevel") < MAX_SCANNING) {
-            stack.getTagCompound().setInteger("scanningLevel", stack.getTagCompound().getInteger("scanningLevel")+1);
+            } else if ((stack.hasTagCompound()) && stack.getTagCompound().getInteger("scanningLevel") < MAX_SCANNING) {
+                stack.getTagCompound().setInteger("scanningLevel", stack.getTagCompound().getInteger("scanningLevel") + 1);
+            }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
@@ -82,20 +101,22 @@ public class ItemPlanetRandom extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
         if (stack.hasTagCompound()) {
+            DecimalFormat formatter = new DecimalFormat("#,###");
+            String primaryMaterialAmount = (formatter.format(stack.getTagCompound().getInteger("primaryMaterialAmount")));
+            String secondaryMaterialAmount = (formatter.format(stack.getTagCompound().getInteger("secondaryMaterialAmount")));
             if (stack.getTagCompound().getInteger("scanningLevel") >= 1) {
-                tooltip.add(I18n.format("tooltip." + stack.getTagCompound().getString("primaryMaterialType") + ".desc"));
+                tooltip.add(I18n.format("tooltip.secondary." + stack.getTagCompound().getString("primaryMaterialType") + ".desc") + " [" + primaryMaterialAmount + "/" + primaryMaterialAmount + "]");
             }
             if (stack.getTagCompound().getInteger("scanningLevel") >= 2) {
-                tooltip.add(I18n.format("tooltip.secondary." + stack.getTagCompound().getString("secondaryMaterialType") + ".desc"));
+                tooltip.add(I18n.format("tooltip.secondary." + stack.getTagCompound().getString("secondaryMaterialType") + ".desc") + " [" + secondaryMaterialAmount + "/" + secondaryMaterialAmount + "]");
             }
             if (stack.getTagCompound().getInteger("scanningLevel") < MAX_SCANNING) {
                 tooltip.add("Additional Scanning Required for More Information");
             }
         }
         else {
-            tooltip.add("Scanning Required for Information");
+            tooltip.add("Scanning Required");
         }
-
     }
 
     @Override
