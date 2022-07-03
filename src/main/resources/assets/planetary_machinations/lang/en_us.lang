@@ -1,8 +1,8 @@
 item.planet_basic.name=Basic Planet
-tooltip.titanium.desc=§fPrimary Resource: §7Titanium
-tooltip.tungsten.desc=§fPrimary Resource: §8Tungsten
-tooltip.iridium.desc=§fPrimary Resource: §7Iridium
-tooltip.platinum.desc=§fPrimary Resource: §bPlatinum
+tooltip.primary.titanium.desc=§fPrimary Resource: §7Titanium
+tooltip.primary.tungsten.desc=§fPrimary Resource: §8Tungsten
+tooltip.primary.iridium.desc=§fPrimary Resource: §7Iridium
+tooltip.primary.platinum.desc=§fPrimary Resource: §bPlatinum
 
 tooltip.secondary.titanium.desc=§fSecondary Resource: §7Titanium
 tooltip.secondary.tungsten.desc=§fSecondary Resource: §8Tungsten

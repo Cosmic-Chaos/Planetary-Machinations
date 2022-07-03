@@ -1,10 +1,12 @@
 package com.filostorm.planetarymachinations;
 
 import com.filostorm.planetarymachinations.init.PMItems;
+import com.filostorm.planetarymachinations.items.planet.PlanetEventHandler;
 import com.filostorm.planetarymachinations.items.planet.PlanetReference;
 import com.filostorm.planetarymachinations.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -39,6 +41,8 @@ public class PlanetaryMachinations
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(new PlanetEventHandler());
+        PlanetReference.postInit();
         System.out.println(Reference.MODID + ":postInit");
     }
     public static final CreativeTabs tabPlanetaryMachinations = (new CreativeTabs("tabPlanetaryMachinations") {

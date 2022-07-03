@@ -4,9 +4,6 @@ package com.filostorm.planetarymachinations.crafttweaker;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.item.IIngredient;
-import crafttweaker.api.item.IItemStack;
-import crafttweaker.api.minecraft.CraftTweakerMC;
 import stanhebben.zenscript.annotations.*;
 import com.filostorm.planetarymachinations.items.planet.ItemPlanetRandom;
 
@@ -27,19 +24,15 @@ public class PlanetAdditions {
 
     private static class addPrimaryMaterial implements IAction {
         private final String name;
-
         public addPrimaryMaterial(String name)
         {
             this.name = name;
         }
-
-
         @Override
         public void apply()
         {
             primaryMaterialTypes.add(name);
         }
-
         @Override
         public String describe()
         {
