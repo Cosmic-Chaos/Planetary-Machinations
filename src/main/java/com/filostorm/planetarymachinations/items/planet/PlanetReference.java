@@ -11,17 +11,10 @@ public class PlanetReference {
     static Random rand = new Random();
     static String[] defaultPrimaryMaterialTypes = {"titanium", "tungsten", "iridium", "platinum"};
     public static ArrayList<String> primaryMaterialTypes = new ArrayList<>();
-
-
-    public static String[] primaryMaterials = {"oreTungstate", "oreCooperite", "oreTetrahedrite","oreIlmenite"};
-    public static ArrayList<ItemStack> primaryMaterialOresList = new ArrayList<>();
+    //Default Veins
+    static Map<String, List<String>> primaryMaterialVeins = new HashMap<>();
 
     public static ItemStack primaryOreTypes(ItemStack stack) {
-        //Default Veins
-        Map<String, List<String>> primaryMaterialVeins = new HashMap<>();
-        primaryMaterialVeins.put("titanium", Arrays.asList("oreTetrahedrite","oreIlmenite"));
-        primaryMaterialVeins.put("iridium", Arrays.asList("oreTungstate", "oreCooperite"));
-
         for (String key : primaryMaterialVeins.keySet()) {
             assert stack.getTagCompound() != null;
             if (stack.getTagCompound().getString("primaryMaterialType").equals(key)) {
@@ -30,7 +23,7 @@ public class PlanetReference {
                                 .get(rand.nextInt( //grabs a random ore from the linked array of ores
                                         (primaryMaterialVeins.get(key)).size()// based on the size of the array
                                 ))).get(0)); //because OreDictionary.getOres returns an array, must convert back to a single item
-        }
+            }
         }
         return null;
     }
@@ -39,10 +32,10 @@ public class PlanetReference {
         primaryMaterialTypes.addAll(Arrays.asList(defaultPrimaryMaterialTypes));
     }
     public static void postInit() {
-
-        for (String oreName : primaryMaterials) {
-            primaryMaterialOresList.addAll((OreDictionary.getOres(oreName)));
-        }
+        primaryMaterialVeins.put("titanium", Arrays.asList("oreIlmenite")); //yes these are basically random right now
+        primaryMaterialVeins.put("iridium", Arrays.asList("oreCooperite"));
+        primaryMaterialVeins.put("platinum", Arrays.asList("oreTetrahedrite"));
+        primaryMaterialVeins.put("tungsten", Arrays.asList("oreTungstate"));
     }
     public static String[] secondaryMaterialTypes = {"titanium", "tungsten", "iridium", "platinum"};
     public static String[] planetTypes = {"normal", "hot", "ice", "wet", "moon"};
