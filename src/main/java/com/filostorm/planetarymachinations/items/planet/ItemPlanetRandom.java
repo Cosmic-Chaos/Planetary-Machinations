@@ -15,8 +15,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -45,6 +43,7 @@ public class ItemPlanetRandom extends Item {
                 });
     }
     public static int getPlanetType(ItemStack stack) {
+        assert stack.getTagCompound() != null;
         if (stack.hasTagCompound()) {
             return Arrays.asList(planetTypes).indexOf(stack.getTagCompound().getString("planetType")) +1;
         } else {
@@ -56,13 +55,15 @@ public class ItemPlanetRandom extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         final ItemStack stack = playerIn.getHeldItem(handIn);
         assert stack.getTagCompound() != null;
+        //NBTTagCompound nbt = stack.getTagCompound(); //Gives NPEs :(
         if (!worldIn.isRemote) {
-            if ((stack.hasTagCompound())) {
-                if (stack.getTagCompound().getInteger("scanningLevel") < MAX_SCANNING) {
+            if (stack.hasTagCompound()) {
+                if (stack.getTagCompound().getInteger("scanningLevel") < MAX_SCANNING && playerIn.isSneaking()) {
                     stack.getTagCompound().setInteger("scanningLevel", stack.getTagCompound().getInteger("scanningLevel") + 1);
                 }
-                if (stack.getTagCompound().hasKey("primaryMaterialType")) {
-                    playerIn.inventory.addItemStackToInventory(new ItemStack(primaryMaterialOresList.get(itemRand.nextInt(primaryMaterialOresList.size())).getItem(),1));
+                if (stack.getTagCompound().getInteger("primaryMaterialAmount") > 0 && !(playerIn.isSneaking())) {
+                    playerIn.inventory.addItemStackToInventory(new ItemStack(primaryOreTypes(stack).getItem(),1));
+                    stack.getTagCompound().setInteger("primaryMaterialAmount", (stack.getTagCompound().getInteger("primaryMaterialAmount")-1));
                 }
             } else {
                 System.out.println("settingTagForPlanet...");
@@ -73,6 +74,7 @@ public class ItemPlanetRandom extends Item {
                 stack.getTagCompound().setString("planetType", planetTypes[itemRand.nextInt(planetTypes.length)]);
                 stack.getTagCompound().setInteger("size", itemRand.nextInt(MAX_SIZE) + 1);
                 stack.getTagCompound().setInteger("primaryMaterialAmount", primaryMaterialAmount(stack));
+                stack.getTagCompound().setInteger("primaryMaterialAmountMax", stack.getTagCompound().getInteger("primaryMaterialAmount"));
                 stack.getTagCompound().setInteger("secondaryMaterialAmount", secondaryMaterialAmount(stack));
                 stack.getTagCompound().setInteger("scanningLevel", 1);
             }
@@ -90,17 +92,20 @@ public class ItemPlanetRandom extends Item {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
+        NBTTagCompound nbt = stack.getTagCompound();
+        assert nbt != null;
         if (stack.hasTagCompound()) {
             DecimalFormat formatter = new DecimalFormat("#,###");
-            String primaryMaterialAmount = (formatter.format(stack.getTagCompound().getInteger("primaryMaterialAmount")));
-            String secondaryMaterialAmount = (formatter.format(stack.getTagCompound().getInteger("secondaryMaterialAmount")));
-            if (stack.getTagCompound().getInteger("scanningLevel") >= 1) {
-                tooltip.add(I18n.format("tooltip.primary." + stack.getTagCompound().getString("primaryMaterialType") + ".desc") + " [" + primaryMaterialAmount + "/" + primaryMaterialAmount + "]");
+            String primaryMaterialAmount = (formatter.format(nbt.getInteger("primaryMaterialAmount")));
+            String primaryMaterialAmountMax = (formatter.format(nbt.getInteger("primaryMaterialAmountMax")));
+            String secondaryMaterialAmount = (formatter.format(nbt.getInteger("secondaryMaterialAmount")));
+            if (nbt.getInteger("scanningLevel") >= 1) {
+                tooltip.add(I18n.format("tooltip.primary." + nbt.getString("primaryMaterialType") + ".desc") + " [" + primaryMaterialAmount + "/" + primaryMaterialAmountMax + "]");
             } //+ <ore:oreMetal>.displayName +
-            if (stack.getTagCompound().getInteger("scanningLevel") >= 2) {
-                tooltip.add(I18n.format("tooltip.secondary." + stack.getTagCompound().getString("secondaryMaterialType") + ".desc") + " [" + secondaryMaterialAmount + "/" + secondaryMaterialAmount + "]");
+            if (nbt.getInteger("scanningLevel") >= 2) {
+                tooltip.add(I18n.format("tooltip.secondary." + nbt.getString("secondaryMaterialType") + ".desc") + " [" + secondaryMaterialAmount + "/" + secondaryMaterialAmount + "]");
             }
-            if (stack.getTagCompound().getInteger("scanningLevel") < MAX_SCANNING) {
+            if (nbt.getInteger("scanningLevel") < MAX_SCANNING) {
                 tooltip.add("Additional Scanning Required for More Information");
             }
         }
@@ -112,6 +117,7 @@ public class ItemPlanetRandom extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public String getItemStackDisplayName(ItemStack stack) {
+        assert stack.getTagCompound() != null;
         if (stack.hasTagCompound()) {
                 return stack.getTagCompound().getString("name");
         }
